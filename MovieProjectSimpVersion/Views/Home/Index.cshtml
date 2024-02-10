@@ -1,0 +1,139 @@
+﻿@model MovieProjectSimpVersion.Models.MovieViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Information Table</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: gold;
+        }
+
+        header {
+            background-color: black;
+            color: gold;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid gold; /* Border color gold */
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: black;
+            color: gold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #333; /* Darker background for even rows */
+        }
+
+        .add-movie-row input {
+            width: calc(100% - 16px); /* Adjust input width to fit the table */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Movie Information</h1>
+    </header>
+
+    <main>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Genre</th>
+                <th>Action</th> <!-- Added header for action -->
+            </tr>
+            @foreach (var movie in Model.Movies)
+            {
+                <tr>
+                    <td>@movie.Title</td>
+                    <td>@movie.Year</td>
+                    <td>@movie.Genre</td>
+                    <td>
+                        <button class="deleteMovieButton btn btn-danger">Delete</button>
+                        <button id="" class="btn btn-warning">Save</button>
+                    </td> <!-- Added empty cell for action column for existing movies -->
+                </tr>
+            }
+            <tr id="newMovieRow" style="display: none;">
+                <td><input type="text" id="newTitle" /></td>
+                <td><input type="text" id="newYear" /></td>
+                <td><input type="text" id="newGenre" /></td>
+                <td>
+                    <button id="saveNewMovieButton" class="btn btn-success">Save</button>
+                    <button class="deleteMovieButton btn btn-danger">Delete</button> <!-- Added delete button -->
+                </td>
+            </tr>
+        </table>
+
+        <!-- Button to add a new movie -->
+        <button id="addMovieButton" class="btn btn-primary">Add New Movie</button>
+    </main>
+
+    <!-- JavaScript to handle adding a new row when the button is clicked -->
+    <script>
+        document.getElementById("addMovieButton").addEventListener("click", function () {
+            document.getElementById("newMovieRow").style.display = "table-row";
+        });
+
+        document.getElementById("saveNewMovieButton").addEventListener("click", function () {
+            var newTitle = document.getElementById("newTitle").value;
+            var newYear = document.getElementById("newYear").value;
+            var newGenre = document.getElementById("newGenre").value;
+
+            // AJAX request to submit the new movie data
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Home/AddMovie");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    location.reload(); // Refresh the page to display the updated movie list
+                }
+            };
+            xhr.send(JSON.stringify({ Title: newTitle, Year: newYear, Genre: newGenre }));
+        });
+
+        // Event listener for delete buttons
+        document.querySelectorAll(".deleteMovieButton").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var row = this.parentNode.parentNode; // Get the parent row of the clicked button
+                var title = row.querySelector("td:first-child").innerText; // Get the title of the movie to delete
+
+                // AJAX request to delete the movie
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/Home/DeleteMovie");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        row.remove(); // Remove the row from the table
+                    }
+                };
+                xhr.send(JSON.stringify({ Title: title }));
+            });
+        });
+    </script>
+</body>
+</html>
