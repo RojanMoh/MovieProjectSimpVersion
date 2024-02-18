@@ -74,7 +74,7 @@ namespace MovieProjectSimpVersion.Controllers
                 {
                     // Delete the movie from the repository
                     _movRepository.Delete(movieViewModel.Title);
-                    _movRepository.Delete(movieViewModel.Genre);
+                    
 
                     return Ok(); // Return 200 OK status if successful
                 }

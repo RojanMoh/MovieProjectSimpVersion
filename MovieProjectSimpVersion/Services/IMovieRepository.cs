@@ -6,10 +6,10 @@ namespace MovieProjectSimpVersion.Repository
     {
         // CRUD operations
         void Add(Movie movie);
-        void Update(int id, Movie updatedMovie);
-        void Delete(int id);
+        //void Update(int id, Movie updatedMovie);
+       // void Delete(int id);
         IEnumerable<Movie> GetAllMovie();
-        Movie GetMovie(int id);
+        //Movie GetMovie(int id);
         void Delete(string title);
     }
 }
